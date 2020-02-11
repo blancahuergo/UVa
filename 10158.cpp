@@ -1,11 +1,10 @@
 #include <iostream>
 #include <vector>
-#include <unordered_set>
 using namespace std;
 
 vector<int> parent;
 vector<int> rnk;
-vector<unordered_set<int>> enemies;
+vector<int> enemies;
 int N;
 
 int root(int a) {
@@ -34,72 +33,72 @@ void mergeByRank(int a, int b) {
 }
 
 bool areFriends(int a, int b) {
-	if (root(a) == root(b)) return true;
-	// if any common enemy, merge(a,b) and return true; otherwise return false
-	bool fr = false;
-	if (enemies[a].size() < enemies[b].size()) {
-		for (const auto& en: enemies[a]) {
-			if (enemies[b].find(en) != enemies[b].end()) {
-				fr = true;
-				break;
-			}
-		}
-	} else {
-		for (const auto& en: enemies[b]) {
-			if (enemies[a].find(en) != enemies[a].end()) {
-				fr = true;
-				break;
-			}
-		}
-	}
-	if (fr) {
-		mergeByRank(a, b);
+	int r_A, r_B;
+	r_A = root(a);
+	r_B = root(b);
+	if (r_A == r_B) {
 		return true;
 	}
-	return false;
+	if (enemies[r_A] != -1 && enemies[r_B] != -1 && (root(enemies[r_A]) == root(enemies[r_B]))) {
+		return true;
+	}
+	else return false;
 }
 
 bool areEnemies(int a, int b) {
-	// rewrite following rest of rules
 	if (areFriends(a, b)) return false;
-	if (enemies[a].find(b) != enemies[a].end()) return true;
-	if (enemies[b].find(a) != enemies[b].end()) return true;
-	// if any of a's enemies is b's friend return false
-	for (const auto& en: enemies[a]) {
-		if (areFriends(b, en)) return false;
-	}
-	// if any of b's enemies is a's friend return false
-	for (const auto& en: enemies[b]) {
-		if (areFriends(a, en)) return false;
-	}
-	return false;
-}
-
-// Set functions correct as long as check functions check all rules
-void setEnemies(int a, int b) {
-	if (areFriends(a, b)) {
-		cout << "-1\n";
-		return;
-	}
-	if (areEnemies(a, b)) return;
-	enemies[a].insert(b);
-	enemies[b].insert(a);
+	int r_A = root(a);
+	int r_B = root(b);
+	if (enemies[r_A] == -1 && enemies[r_B] == -1) return false;
+	if (enemies[r_A] == -1) {
+		return areFriends(r_A, enemies[r_B]);
+	} else if (enemies[r_B] == -1) {
+		return areFriends(r_B, enemies[r_A]);
+	} else return enemies[r_A] == r_B || enemies[r_B] == r_A;
 }
 
 void setFriends(int a, int b) {
-	if (areEnemies(a, b)) {
+	int r_A = root(a);
+	int r_B = root(b);
+	if (areEnemies(a, b) || (enemies[r_A] != -1 && enemies[r_B] != -1 && areEnemies(enemies[r_A], enemies[r_B]))) {
 		cout << "-1\n";
 		return;
 	}
 	if (areFriends(a, b)) return;
 	mergeByRank(a, b);
+	if (enemies[r_A] != -1 && enemies[r_B] != -1) mergeByRank(enemies[r_A], enemies[r_B]);
+	if (enemies[r_A] == -1 && enemies[r_B] != -1) enemies[r_A] = root(enemies[r_B]);
+	else if (enemies[r_B] == -1 && enemies[r_A] != -1) enemies[r_B] = root(enemies[r_A]);
+}
+
+void setEnemies(int a, int b) {
+	int r_A = root(a);
+	int r_B = root(b);
+	if (areFriends(a, b)) {
+		cout << "-1\n";
+		return;
+	}
+	if (enemies[r_A] != -1 && areEnemies(enemies[r_A], b)) {
+		cout << "-1\n";
+		return;
+	}
+	if (enemies[r_B] != -1 && areEnemies(enemies[r_B], a)) {
+		cout << "-1\n";
+		return;
+	}
+	if (areEnemies(a, b)) return;
+	if (enemies[r_A] != -1) {
+		mergeByRank(enemies[r_A], b);
+	} else enemies[r_A] = r_B;
+	if (enemies[r_B] != -1) {
+		mergeByRank(enemies[r_B], a);
+	} else enemies[r_B] = r_A;
 }
 
 int main() {
 	int a, b, c;
 	cin >> N;
-	unordered_set<int> empt;
-	enemies.assign(N, empt);
+	enemies.assign(N, -1);
 	rnk.assign(N, 0);
 	parent.assign(N, 0);
 	for (int u = 0; u < N; u++) parent[u] = u;
