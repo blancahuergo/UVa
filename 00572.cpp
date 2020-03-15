@@ -44,11 +44,6 @@ int main() {
 				}
 			}
 		}
-		int CCsizes[numCC];
-		memset(CCsizes, 0, sizeof CCsizes);
-		for (int n = 0; n < CC.size(); n++) {
-			CCsizes[CC[n]]++;
-		}
 		cout << numCC << endl;
 	}
 	return 0;
