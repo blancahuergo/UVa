@@ -8,9 +8,8 @@ vector<int> times;
 vector<vector<vector<int>>> adj_list;
 
 int Dijkstra(int S, int N, int T) {
-	vector<int> dist, predec;
+	vector<int> dist;
 	dist.assign(N, 2000000000);
-	predec.assign(N, -1);
 	dist[S] = 0;
 	priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
 	pq.push({0, S, -1});
@@ -32,7 +31,6 @@ int Dijkstra(int S, int N, int T) {
 			if (dist[u]+ed_v < dist[v]) {
 				dist[v] = dist[u]+ed_v;
 				pq.push({dist[v], v, elev_v});
-				predec[v] = u;
 			}
 		}
 	}
