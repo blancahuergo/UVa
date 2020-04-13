@@ -1,7 +1,7 @@
 import java.math.BigInteger;
 import java.util.Scanner;
 
-public class Solution {
+public class 10606 {
 	public static void main(String args[]) {
 		BigInteger x, low, high, mid;
 		String line;
