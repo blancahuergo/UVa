@@ -1,7 +1,7 @@
 import java.math.BigInteger;
 import java.util.Scanner;
 
-public class Main {
+public class 11609 {
 	public static void main(String[] args) {
 		int T, N;
 		BigInteger ans, two, mod;
